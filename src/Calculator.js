@@ -1,46 +1,75 @@
 import "./Calculator.css";
 import { useState } from "react";
+import { evaluate } from "mathjs";
+import { useRef } from "react";
 
 const Calculator = () => {
-  const [displayText, setDisplayText] = useState("0");
-  const [mathFunctions, setMathFunctions] = useState(["*", "/", "+", "-"]);
+  const [displayText, setDisplayText] = useState("");
   const [keyDigits, setKeyDigits] = useState([
-    0,
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
     ".",
     "AC",
+    "*",
+    "/",
+    "+",
+    "-",
+    "=",
   ]);
 
-  const keyDownHandler = (event) => {
-    if (keyDigits.includes(event.key)) {
-      const newArray = [...displayText];
-      newArray.push(event.key);
-      setDisplayText(newArray);
+  const mainRef = useRef(null);
+
+  const keyDownHandler = (e) => {
+    if (keyDigits.includes(e.key)) {
+      let newString = displayText + e.key;
+      setDisplayText(newString);
+    } else if (e.key === "Enter") {
+      setDisplayText(evaluateMath(displayText));
+    } else if (e.key === "Escape") {
+      setDisplayText("0");
     }
   };
 
   const enterDigitHandler = (index) => {
-    const newArray = [...displayText];
-    newArray.push(keyDigits[index]);
-    setDisplayText(newArray);
+    if (keyDigits[index] !== "=" && keyDigits[index] !== "AC") {
+      let newString = displayText + keyDigits[index];
+      setDisplayText(newString);
+    } else if (keyDigits[index] === "=") {
+      //evaluate maths
+      setDisplayText(evaluateMath(displayText));
+    } else {
+      //clear
+      setDisplayText("0");
+    }
+  };
+
+  const evaluateMath = (mathString) => {
+    console.log(evaluate(3 / 0));
+    let evaluation = evaluate(mathString);
+    if (evaluation === Infinity) {
+      return "Err";
+    }
+    return evaluation;
   };
 
   return (
-    <div className="container" onKeyDown={keyDownHandler}>
+    <div
+      ref={mainRef}
+      tabIndex="-1"
+      onKeyDown={keyDownHandler}
+      className="container"
+    >
       <>
         <h1>{displayText}</h1>
       </>
-      {mathFunctions.map((mathFunc, index) => {
-        return <FuncItem key={index} item={mathFunc} />;
-      })}
 
       {keyDigits.map((digit, index) => {
         return (
@@ -51,20 +80,6 @@ const Calculator = () => {
           />
         );
       })}
-
-      <>
-        <h2>=</h2>
-      </>
-    </div>
-  );
-};
-
-const FuncItem = (props) => {
-  return (
-    <div className="func-item-container">
-      <div className="func-item">
-        <h2>{props.item}</h2>
-      </div>
     </div>
   );
 };

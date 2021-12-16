@@ -72,17 +72,3 @@ Calculator App
   border-radius: 12px;
   box-shadow: var(--dark-shadow);
 }
-
-.func-item-container {
-  display: flex;
-  flex-direction: row;
-  background-color: red;
-  width: 100%;
-  /* justify-content: center;
-  align-items: center; */
-}
-
-.func-item {
-  width: 25%;
-  background-color: white;
-}
