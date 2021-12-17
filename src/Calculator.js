@@ -9,95 +9,107 @@ const Calculator = () => {
     {
       digit: "1",
       id: "one",
-      lz: false,
+      lzAllowed: false,
     },
     {
       digit: "2",
       id: "two",
-      lz: false,
+      lzAllowed: false,
     },
     {
       digit: "3",
       id: "three",
-      lz: false,
+      lzAllowed: false,
     },
     {
       digit: "+",
       id: "plus",
-      lz: false,
+      lzAllowed: false,
     },
     {
       digit: "4",
       id: "four",
-      lz: false,
+      lzAllowed: false,
     },
     {
       digit: "5",
       id: "five",
-      lz: false,
+      lzAllowed: false,
     },
     {
       digit: "6",
       id: "six",
-      lz: false,
+      lzAllowed: false,
     },
     {
       digit: "-",
       id: "minus",
-      lz: false,
+      lzAllowed: false,
     },
     {
       digit: "7",
       id: "seven",
-      lz: false,
+      lzAllowed: false,
     },
     {
       digit: "8",
       id: "eight",
-      lz: false,
+      lzAllowed: false,
     },
     {
       digit: "9",
       id: "nine",
-      lz: false,
+      lzAllowed: false,
     },
     {
       digit: "*",
       id: "times",
-      lz: false,
+      lzAllowed: false,
     },
     {
       digit: "0",
       id: "zero",
-      lz: false,
+      lzAllowed: false,
     },
     {
       digit: ".",
       id: "point",
-      lz: true,
+      lzAllowed: true,
     },
     {
       digit: "AC",
       id: "clear",
-      lz: false,
+      lzAllowed: false,
     },
     {
       digit: "/",
       id: "divide",
-      lz: false,
+      lzAllowed: false,
     },
     {
       digit: "=",
       id: "equals",
-      lz: false,
+      lzAllowed: false,
     },
   ]);
 
   const mainRef = useRef(null);
 
+  //TODO: keydown only works when container has focus.
   const keyDownHandler = (e) => {
-    if (keyDigits.digit.includes(e.key)) {
-      let newString = displayText + e.key;
+    if (keyDigits.some((obj) => obj.digit === e.key)) {
+      let newString = "";
+      //find the keyDigits index
+      const keyIndex = keyDigits
+        .map((d) => {
+          return d.digit;
+        })
+        .indexOf(e.key);
+      if (canHaveLeadingZero(keyIndex)) {
+        newString = displayText + e.key;
+      } else {
+        newString = e.key;
+      }
       setDisplayText(newString);
     } else if (e.key === "Enter") {
       setDisplayText(evaluateMath(displayText));
@@ -108,7 +120,12 @@ const Calculator = () => {
 
   const enterDigitHandler = (index) => {
     if (keyDigits[index].digit !== "=" && keyDigits[index].digit !== "AC") {
-      let newString = displayText + keyDigits[index].digit;
+      let newString = "";
+      if (canHaveLeadingZero(index)) {
+        newString = displayText + keyDigits[index].digit;
+      } else {
+        newString = keyDigits[index].digit;
+      }
       setDisplayText(newString);
     } else if (keyDigits[index].digit === "=") {
       //evaluate maths
@@ -117,6 +134,16 @@ const Calculator = () => {
       //clear
       setDisplayText("0");
     }
+  };
+
+  const canHaveLeadingZero = (index) => {
+    //Remove the leading '0' if keypress is not a '.'
+    if (displayText === "0") {
+      if (keyDigits[index].lzAllowed === false) {
+        return false;
+      }
+    }
+    return true;
   };
 
   const evaluateMath = (mathString) => {
@@ -148,6 +175,7 @@ const Calculator = () => {
               key={index}
               digit={digit.digit}
               id={digit.id}
+              lzAllowed={digit.lzAllowed}
               enterDigit={() => enterDigitHandler(index)}
             />
           );
