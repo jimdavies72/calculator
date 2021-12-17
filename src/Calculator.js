@@ -2,7 +2,7 @@ import "./Calculator.css";
 import Digit from "./components/Digit";
 import { useState } from "react";
 import { evaluate } from "mathjs";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 const Calculator = () => {
   const [displayText, setDisplayText] = useState("0");
@@ -112,6 +112,10 @@ const Calculator = () => {
   ]);
 
   const mainRef = useRef(null);
+
+  useEffect(() => {
+    document.title = "Calculator App";
+  }, []);
 
   //TODO: keydown only works when container has focus.
   const keyDownHandler = (e) => {
