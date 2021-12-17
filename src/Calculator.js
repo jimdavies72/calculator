@@ -1,4 +1,5 @@
 import "./Calculator.css";
+import Digit from "./components/Digit";
 import { useState } from "react";
 import { evaluate } from "mathjs";
 import { useRef } from "react";
@@ -10,86 +11,103 @@ const Calculator = () => {
       digit: "1",
       id: "one",
       lzAllowed: false,
+      canDuplicate: true,
     },
     {
       digit: "2",
       id: "two",
       lzAllowed: false,
+      canDuplicate: true,
     },
     {
       digit: "3",
       id: "three",
       lzAllowed: false,
+      canDuplicate: true,
     },
     {
       digit: "+",
       id: "plus",
       lzAllowed: false,
+      canDuplicate: false,
     },
     {
       digit: "4",
       id: "four",
       lzAllowed: false,
+      canDuplicate: true,
     },
     {
       digit: "5",
       id: "five",
       lzAllowed: false,
+      canDuplicate: true,
     },
     {
       digit: "6",
       id: "six",
       lzAllowed: false,
+      canDuplicate: true,
     },
     {
       digit: "-",
       id: "minus",
       lzAllowed: false,
+      canDuplicate: false,
     },
     {
       digit: "7",
       id: "seven",
       lzAllowed: false,
+      canDuplicate: true,
     },
     {
       digit: "8",
       id: "eight",
       lzAllowed: false,
+      canDuplicate: true,
     },
     {
       digit: "9",
       id: "nine",
       lzAllowed: false,
+      canDuplicate: true,
     },
     {
       digit: "*",
       id: "times",
       lzAllowed: false,
+      canDuplicate: false,
     },
     {
       digit: "0",
       id: "zero",
       lzAllowed: false,
+      canDuplicate: true,
     },
     {
       digit: ".",
       id: "point",
       lzAllowed: true,
+      canDuplicate: false,
     },
     {
       digit: "AC",
       id: "clear",
       lzAllowed: false,
+      canDuplicate: true,
     },
     {
       digit: "/",
       id: "divide",
       lzAllowed: false,
+      canDuplicate: false,
     },
     {
       digit: "=",
       id: "equals",
       lzAllowed: false,
+      canDuplicate: false,
     },
   ]);
 
@@ -110,7 +128,7 @@ const Calculator = () => {
       } else {
         newString = e.key;
       }
-      setDisplayText(newString);
+      canDuplicateDigit(keyIndex) && setDisplayText(newString);
     } else if (e.key === "Enter") {
       setDisplayText(evaluateMath(displayText));
     } else if (e.key === "Escape") {
@@ -126,7 +144,7 @@ const Calculator = () => {
       } else {
         newString = keyDigits[index].digit;
       }
-      setDisplayText(newString);
+      canDuplicateDigit(index) && setDisplayText(newString);
     } else if (keyDigits[index].digit === "=") {
       //evaluate maths
       setDisplayText(evaluateMath(displayText));
@@ -146,12 +164,26 @@ const Calculator = () => {
     return true;
   };
 
+  const canDuplicateDigit = (index) => {
+    if (
+      keyDigits[index].digit === displayText.slice(-1) &&
+      keyDigits[index].canDuplicate === false
+    ) {
+      return false;
+    }
+    return true;
+  };
+
   const evaluateMath = (mathString) => {
-    let evaluation = evaluate(mathString);
-    if (evaluation === Infinity) {
+    try {
+      let evaluation = evaluate(mathString);
+      if (evaluation === Infinity) {
+        return "Err";
+      }
+      return evaluation;
+    } catch (error) {
       return "Err";
     }
-    return evaluation;
   };
 
   return (
@@ -176,21 +208,12 @@ const Calculator = () => {
               digit={digit.digit}
               id={digit.id}
               lzAllowed={digit.lzAllowed}
+              canDuplicate={digit.canDuplicate}
               enterDigit={() => enterDigitHandler(index)}
             />
           );
         })}
       </div>
-    </div>
-  );
-};
-
-const Digit = (props) => {
-  return (
-    <div className="button">
-      <h2 id={props.id} onClick={props.enterDigit}>
-        {props.digit}
-      </h2>
     </div>
   );
 };
